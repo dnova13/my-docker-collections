@@ -1,0 +1,27 @@
+version: '3'
+services:
+    django:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: django
+        ports:
+            - '80:80'
+            - '2000:22'
+        # 최대 메모리양 설정 : 128m : 적은양 간단한 작업식 적절
+        # mem_limit: 128m
+        restart: always
+        volumes:
+            - ./uploads/:/app/airbnb-clone/uploads/:rw
+            - ./.config/nginx/my.conf:/etc/nginx/sites-enabled/default
+            - ./.config/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+            - ./.log/service/:/var/log/service/
+            - ./.log/nginx/:/var/log/nginx/
+        depends_on:
+            - postgres
+        networks:
+            - django-network
+networks:
+    django-network:
+        name: django-network
+        driver: bridge

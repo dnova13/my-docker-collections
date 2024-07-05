@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+    certbot:
+        image: certbot/certbot
+        container_name: certbot
+        volumes:
+            - ./nginx/certs:/etc/letsencrypt
+            - ./nginx/conf.d:/etc/nginx/conf.d
+            - ./var/www/certbot:/var/www/certbot
+        # 12시간 마다 재실행하여 certbot 갱신
+        entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+        # 한달 단위로 재실행
+        # entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep $((30 * 24 * 60 * 60)) & wait $${!}; done;'"
+        networks:
+            - nginx-proxy
+
+networks:
+    nginx-proxy:
+        driver: bridge

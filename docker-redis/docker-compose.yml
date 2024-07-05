@@ -1,0 +1,20 @@
+version: '3'
+services:
+    redis:
+        build:
+            context: ./.redis
+            dockerfile: Dockerfile
+        container_name: redis
+        mem_limit: 128m
+        restart: unless-stopped
+        ports:
+            - 6379:6379
+        volumes:
+            - ./.redis/redis_data/:/data/
+            - ./.redis/my-redis.conf:/usr/local/etc/redis/redis.conf
+        networks:
+            - my-network
+networks:
+    my-network:
+        name: my-network
+        driver: bridge
